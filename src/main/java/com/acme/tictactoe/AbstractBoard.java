@@ -2,8 +2,8 @@ package com.acme.tictactoe;
 
 public abstract class AbstractBoard<T extends Coordinate> implements Board<T> {
 
-    protected final int size;
-    protected int placed = 0;
+    private final int size;
+    private int placed = 0;
 
     protected AbstractBoard(int size) {
         this.size = size;

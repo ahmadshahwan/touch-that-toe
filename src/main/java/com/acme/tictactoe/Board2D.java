@@ -26,6 +26,7 @@ public class Board2D extends AbstractBoard<Coordinate> {
         Player player = this.at(position);
         int i = position.getI();
         int j = position.getJ();
+        int size = this.getSize();
         return
                 this.testOverRange(x -> this.cells[x][j] == player) ||
                 this.testOverRange(x -> this.cells[i][x] == player) ||
@@ -34,7 +35,7 @@ public class Board2D extends AbstractBoard<Coordinate> {
     }
 
     private boolean testOverRange(IntPredicate predicate) {
-        return IntStream.range(0, size).allMatch(predicate);
+        return IntStream.range(0, this.getSize()).allMatch(predicate);
     }
 
 

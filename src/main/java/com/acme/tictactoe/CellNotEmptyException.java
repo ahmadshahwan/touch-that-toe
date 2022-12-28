@@ -2,7 +2,7 @@ package com.acme.tictactoe;
 
 public class CellNotEmptyException extends IllegalStateException {
 
-    public CellNotEmptyException(int i, int j) {
-        super("Cell at (%d, %d) is occupied".formatted(i, j));
+    public CellNotEmptyException(Coordinate position) {
+        super("Cell at %s is occupied".formatted(position));
     }
 }

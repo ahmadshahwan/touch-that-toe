@@ -5,17 +5,17 @@ import java.util.Scanner;
 
 public class Game {
 
-    private Board board;
+    private Board<Coordinate> board;
     private Integer next;
 
-    private Scanner scanner = new Scanner(System.in);
+    private final Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
         new Game().play();
     }
 
     public Game() {
-        this.board = new Board();
+        this.board = new Board2D();
     }
 
     public void play() {
@@ -36,7 +36,7 @@ public class Game {
             } while (!readConfirmation());
             int i = this.next / size;
             int j = this.next % size;
-            finished = this.board.place(i, j, player);
+            finished = this.board.place(new Coordinate(i, j), player);
             this.next = null;
             print();
             if (finished) {
@@ -99,7 +99,7 @@ public class Game {
                         continue;
                     }
                 }
-                Player cell = this.board.at(i, j);
+                Player cell = this.board.at(new Coordinate(i, j));
                 if (cell == null) {
                     int label = i * size + j;
                     out.print(size > 3 ? " %c ".formatted('a' + label) : " %d ".formatted(label + 1));

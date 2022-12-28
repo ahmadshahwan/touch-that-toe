@@ -1,9 +1,11 @@
-package com.acme.tictactoe;
+package com.acme.tictactoe.square;
 
+import com.acme.tictactoe.AbstractBoard;
+import com.acme.tictactoe.Player;
 import java.util.function.IntPredicate;
 import java.util.stream.IntStream;
 
-public class Board2D extends AbstractBoard<Coordinate> {
+public class Board2D extends AbstractBoard<Coordinate2D> {
 
     private final Player[][] cells;
 
@@ -17,15 +19,15 @@ public class Board2D extends AbstractBoard<Coordinate> {
     }
 
     @Override
-    protected void put(Coordinate position, Player player) {
-        this.cells[position.getI()][position.getJ()] = player;
+    protected void put(Coordinate2D position, Player player) {
+        this.cells[position.i()][position.j()] = player;
     }
 
     @Override
-    protected boolean checkWin(Coordinate position) {
+    protected boolean checkWin(Coordinate2D position) {
         Player player = this.at(position);
-        int i = position.getI();
-        int j = position.getJ();
+        int i = position.i();
+        int j = position.j();
         int size = this.getSize();
         return
                 this.testOverRange(x -> this.cells[x][j] == player) ||
@@ -40,8 +42,8 @@ public class Board2D extends AbstractBoard<Coordinate> {
 
 
     @Override
-    public Player at(Coordinate position) {
-        return this.at(position.getI(), position.getJ());
+    public Player at(Coordinate2D position) {
+        return this.at(position.i(), position.j());
     }
     public Player at(int i, int j) {
         return this.cells[i][j];

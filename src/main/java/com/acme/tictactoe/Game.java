@@ -1,11 +1,13 @@
 package com.acme.tictactoe;
 
+import com.acme.tictactoe.square.Board2D;
+import com.acme.tictactoe.square.Coordinate2D;
 import java.io.PrintStream;
 import java.util.Scanner;
 
 public class Game {
 
-    private Board<Coordinate> board;
+    private Board<Coordinate2D> board;
     private Integer next;
 
     private final Scanner scanner = new Scanner(System.in);
@@ -36,7 +38,7 @@ public class Game {
             } while (!readConfirmation());
             int i = this.next / size;
             int j = this.next % size;
-            finished = this.board.place(new Coordinate(i, j), player);
+            finished = this.board.place(new Coordinate2D(i, j), player);
             this.next = null;
             print();
             if (finished) {
@@ -99,7 +101,7 @@ public class Game {
                         continue;
                     }
                 }
-                Player cell = this.board.at(new Coordinate(i, j));
+                Player cell = this.board.at(new Coordinate2D(i, j));
                 if (cell == null) {
                     int label = i * size + j;
                     out.print(size > 3 ? " %c ".formatted('a' + label) : " %d ".formatted(label + 1));

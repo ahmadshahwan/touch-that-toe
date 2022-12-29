@@ -1,5 +1,7 @@
 package com.acme.tictactoe;
 
+import com.acme.tictactoe.cube.Board3D;
+import com.acme.tictactoe.cube.Coordinate3D;
 import com.acme.tictactoe.square.Board2D;
 import com.acme.tictactoe.square.Coordinate2D;
 import java.io.PrintStream;
@@ -7,8 +9,10 @@ import java.util.Scanner;
 
 public class Game {
 
-    private Board<Coordinate2D> board;
-    private Integer next;
+    private Board<? extends Coordinate> board;
+    private Coordinate next;
+
+    private Player currentPlayer;
 
     private final Scanner scanner = new Scanner(System.in);
 
@@ -17,17 +21,17 @@ public class Game {
     }
 
     public Game() {
-        this.board = new Board2D();
     }
 
     public void play() {
+        while (this.board == null) {
+            this.chooseBoard();
+        }
         boolean finished = false;
-        Player player = null;
-        int size = this.board.getSize();
         print();
         while (!finished) {
-            player = player == Player.X ? Player.O : Player.X;
-            System.out.printf("Player %s turns.\n", player);
+            this.currentPlayer = this.currentPlayer == Player.X ? Player.O : Player.X;
+            System.out.printf("Player %s turns.\n", this.currentPlayer);
             System.out.println("Please enter the label of the cell where to place your mark.");
             while (!readChoice()) {
                 System.out.println("Bad input. Please make your choice.");
@@ -36,13 +40,11 @@ public class Game {
                 print();
                 System.out.println("Confirm your choice by pressing Enter. You can enter another choice otherwise.");
             } while (!readConfirmation());
-            int i = this.next / size;
-            int j = this.next % size;
-            finished = this.board.place(new Coordinate2D(i, j), player);
+            finished = this.place();
             this.next = null;
             print();
             if (finished) {
-                System.out.printf("Player %s wins.\n", player);
+                System.out.printf("Player %s wins.\n", this.currentPlayer);
             } else {
                 finished = board.isFull();
                 if (finished) {
@@ -52,25 +54,75 @@ public class Game {
         }
     }
 
+    private void chooseBoard() {
+        System.out.println("Please choose board type: 2 for 2D or 3 for 3D.");
+        String line = this.scanner.nextLine().trim();
+        char c = line.isEmpty() ? '\0' : line.charAt(0);
+        if (c == '2') {
+            this.board = new Board2D();
+            return;
+        }
+        if (c == '3') {
+            this.board = new Board3D();
+            return;
+        }
+        System.out.println("Bad input.");
+    }
+
+    private boolean place() {
+        if (
+                this.board instanceof Board2D board2D &&
+                this.next instanceof Coordinate2D coordinate2D) {
+            return board2D.place(coordinate2D, this.currentPlayer);
+        }
+        if (
+                this.board instanceof Board3D board3D &&
+                this.next instanceof Coordinate3D coordinate3D) {
+            return board3D.place(coordinate3D, this.currentPlayer);
+        }
+        throw new IllegalStateException("Cannot place next move due to mismatching board move types.");
+    }
+
+    private boolean is3D() {
+        return this.board instanceof Board3D;
+    }
 
     public boolean readNext(boolean confirmation) {
         String line = this.scanner.nextLine().trim();
         if (line.isBlank()) {
             return confirmation;
         }
+        int k = 0;
         char c = line.charAt(0);
+        if (this.is3D()) {
+            if (c >= 'a' && c <= 'c') {
+                k = c - 'a';
+            } else if (c >= 'A' && c <= 'C') {
+                k = c - 'A';
+            } else {
+                return false;
+            }
+            c = ' ';
+            for (int i = 1; i < line.length() && c == ' '; i++) {
+                c = line.charAt(i);
+            }
+        }
+        int ij;
         if (c >= '1' && c <= '9') {
-            this.next = c - '1';
+            ij = c - '1';
         } else if (c >= 'a' && c <= 'z') {
-            this.next = c - 'a';
+            ij = c - 'a';
         } else if (c >= 'A' && c <= 'Z') {
-            this.next = c - 'A';
+            ij = c - 'A';
         } else {
             return false;
         }
-        if (this.next >= this.board.getSize() * this.board.getSize()) {
+        if (ij >= this.board.getSize() * this.board.getSize()) {
             return false;
         }
+        int i = ij / this.board.getSize();
+        int j = ij % this.board.getSize();
+        this.next = is3D() ? new Coordinate3D(i, j, k) : new Coordinate2D(i, j);
         return !confirmation;
     }
 
@@ -84,32 +136,62 @@ public class Game {
 
 
     public void print() {
-        this.print(System.out);
+        if (this.board instanceof Board2D board2D) {
+            print(System.out, board2D);
+        } else if (this.board instanceof Board3D board3D) {
+            this.print(System.out, board3D);
+        }
     }
 
-    public void print(PrintStream out) {
-        int size = this.board.getSize();
+    private void print(PrintStream out, Board3D board) {
+        int size = board.getSize();
+        out.println();
+        for (int k = 0; k < size; k++) {
+            out.print(" ".repeat(5));
+            out.printf("(%c)", 'a' + k);
+            if (k != size - 1) {
+                out.print(" ".repeat(12));
+            } else {
+                out.println();
+            }
+        }
+        for (int i = 0; i < size; i++) {
+            for (int k = 0; k < size; k++) {
+                out.print(" |");
+                for (int j = 0; j < size; j++) {
+                    Coordinate3D current = new Coordinate3D(i, j, k);
+                    Player cell = board.at(current);
+                    int label = i * size + j + 1;
+                    this.print(out, current, cell, label);
+                }
+                out.print("|");
+                out.print(" ".repeat(8));
+            }
+            out.println();
+        }
+    }
+    private void print(PrintStream out, Board2D board) {
+        int size = board.getSize();
         out.println();
         for (int i = 0; i < size; i++) {
             out.print(" |");
             for (int j = 0; j < size; j++) {
-                if (this.next != null) {
-                    int iNext = this.next / size;
-                    int jNext = this.next % size;
-                    if (i == iNext && j == jNext) {
-                        out.print(" # ");
-                        continue;
-                    }
-                }
-                Player cell = this.board.at(new Coordinate2D(i, j));
-                if (cell == null) {
-                    int label = i * size + j;
-                    out.print(size > 3 ? " %c ".formatted('a' + label) : " %d ".formatted(label + 1));
-                } else {
-                    out.printf(" %s ", cell);
-                }
+                Coordinate2D current = new Coordinate2D(i, j);
+                Player cell = board.at(current);
+                int label = i * size + j + 1;
+                this.print(out, current, cell, label);
             }
             out.println("|");
+        }
+    }
+
+    private void print(PrintStream out, Coordinate current, Player player, int label) {
+        if (this.next !=null && this.next.equals(current)) {
+            out.printf(">%s<", this.currentPlayer.toString().toLowerCase());
+        } else if (player == null) {
+            out.printf(" %d ", label);
+        } else {
+            out.printf(" %s ", player);
         }
     }
 }

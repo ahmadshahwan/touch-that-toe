@@ -1,5 +1,7 @@
-package com.acme.tictactoe;
+package com.acme.tictactoe.sqaure;
 
+import com.acme.tictactoe.CellNotEmptyException;
+import com.acme.tictactoe.Player;
 import com.acme.tictactoe.square.Board2D;
 import com.acme.tictactoe.square.Coordinate2D;
 
@@ -81,7 +83,5 @@ public class Board2DTest {
                 }
             }
         }
-
-
     }
 }

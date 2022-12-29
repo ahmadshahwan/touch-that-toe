@@ -1,7 +1,5 @@
 package com.acme.tictactoe;
 
-import java.util.stream.IntStream;
-
 public abstract class AbstractBoard<T extends Coordinate> implements Board<T> {
 
     private final int size;

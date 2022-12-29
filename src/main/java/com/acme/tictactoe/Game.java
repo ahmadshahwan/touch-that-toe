@@ -1,5 +1,6 @@
 package com.acme.tictactoe;
 
+import com.acme.tictactoe.i18n.Text;
 import com.acme.tictactoe.square.Engine2D;
 import com.acme.tictactoe.cube.Engine3D;
 import java.util.Scanner;
@@ -10,11 +11,18 @@ public class Game {
 
     private final Scanner scanner = new Scanner(System.in);
 
+    private final Text text;
+
     public static void main(String[] args) {
         new Game().play();
     }
 
     public Game() {
+        this(Text.en());
+    }
+
+    public Game(Text text) {
+        this.text = text;
     }
 
     public void play() {
@@ -25,30 +33,34 @@ public class Game {
         this.print();
         while (!finished) {
             Player currentPlayer = this.engine.flipPlayer();
-            System.out.printf("Player %s turns.\n", currentPlayer);
-            System.out.println("Please enter the label of the cell where to place your mark.");
+            System.out.printf(this.text.playerTurn, currentPlayer);
+            if (this.engine.dimensions() == 3) {
+                System.out.println(this.text.enterLabel3D);
+            } else {
+                System.out.println(this.text.enterLabel2D);
+            }
             while (!readChoice()) {
-                System.out.println("Bad input. Please make your choice.");
+                System.out.println(this.text.badInput);
             }
             do {
                 this.print();
-                System.out.println("Confirm your choice by pressing Enter. You can enter another choice otherwise.");
+                System.out.println(this.text.confirmChoice);
             } while (!readConfirmation());
             finished = this.engine.place();
             this.print();
             if (finished) {
-                System.out.printf("Player %s wins.\n", currentPlayer);
+                System.out.printf(this.text.playerWins, currentPlayer);
             } else {
                 finished = this.engine.isGameOver();
                 if (finished) {
-                    System.out.println("Board is full. Game over.");
+                    System.out.println(this.text.boardIsFull);
                 }
             }
         }
     }
 
     private void chooseBoard() {
-        System.out.println("Please choose board type: 2 for 2D or 3 for 3D.");
+        System.out.println(this.text.boardChoice);
         String line = this.scanner.nextLine().trim();
         char c = line.isEmpty() ? '\0' : line.charAt(0);
         if (c == '2') {
@@ -59,7 +71,7 @@ public class Game {
             this.engine = new Engine3D();
             return;
         }
-        System.out.println("Bad input.");
+        System.out.println(this.text.badInput);
     }
 
     public boolean readNext(boolean confirmation) {

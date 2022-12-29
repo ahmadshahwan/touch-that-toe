@@ -11,4 +11,6 @@ public interface Board<T extends Coordinate> {
     Player at(T position);
 
     boolean isFull();
+
+    int dimensions();
 }

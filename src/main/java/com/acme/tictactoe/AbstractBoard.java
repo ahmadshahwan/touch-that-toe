@@ -39,4 +39,9 @@ public abstract class AbstractBoard<T extends Coordinate> implements Board<T> {
     public final boolean isFull()  {
         return this.placed >= this.capacity;
     }
+
+    @Override
+    public int dimensions() {
+        return this.numberOfDimensions;
+    }
 }

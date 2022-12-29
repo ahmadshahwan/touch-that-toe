@@ -15,7 +15,7 @@ public class Board3D extends AbstractBoard<Coordinate3D> {
     private final Player[][][] cells;
 
     public Board3D(int size) {
-        super(size);
+        super(size, 3);
         this.cells = new Player[size][size][size];
     }
 
@@ -35,9 +35,9 @@ public class Board3D extends AbstractBoard<Coordinate3D> {
         int j = position.j();
         int k = position.k();
         return
-                this.testOverRange(x -> this.cells[x][j][k] == player) ||
-                this.testOverRange(x -> this.cells[i][x][k] == player) ||
-                this.testOverRange(x -> this.cells[i][j][x] == player) ||
+                this.testOverRange(x -> x, x -> j, x -> k, player) ||
+                this.testOverRange(x -> i, x -> x, x -> k, player) ||
+                this.testOverRange(x -> i, x -> j, x -> x, player) ||
                 this.testDiagonal(i, j, k, this::diag, this::diag, player) ||
                 this.testDiagonal(i, j, k, this::diag, this::anti, player) ||
                 this.testDiagonal(i, j, k, this::anti, this::diag, player) ||
@@ -55,15 +55,15 @@ public class Board3D extends AbstractBoard<Coordinate3D> {
         list.add(this::diag);
         list.add(f);
         list.add(fixedDimension, (ignored) -> fixedValue);
-        return this.testDiagonal(list.get(0), list.get(1), list.get(2), player);
+        return this.testOverRange(list.get(0), list.get(1), list.get(2), player);
     }
 
-    private boolean testDiagonal(Function<Integer, Integer> fI, Function<Integer, Integer> fJ, Function<Integer, Integer> fK, Player player) {
+    private boolean testOverRange(Function<Integer, Integer> fI, Function<Integer, Integer> fJ, Function<Integer, Integer> fK, Player player) {
         return this.testOverRange(x -> this.cells[fI.apply(x)][fJ.apply(x)][fK.apply(x)] == player);
     }
 
     private boolean testDiagonal(int i, int j, int k, Function<Integer, Integer> fJ, Function<Integer, Integer> fK, Player player) {
-        return (i == fJ.apply(j) && i == fK.apply(k) && this.testDiagonal(x -> x, fJ, fK, player));
+        return (i == fJ.apply(j) && i == fK.apply(k) && this.testOverRange(x -> x, fJ, fK, player));
     }
 
     private int diag(int x) {
@@ -89,7 +89,7 @@ public class Board3D extends AbstractBoard<Coordinate3D> {
     }
 
     public Board<Coordinate2D> at(int i) {
-        return new AbstractBoard<>(this.getSize()) {
+        return new AbstractBoard<>(this.getSize(), 2) {
             @Override
             protected void put(Coordinate2D position, Player player) {
                 throw new IllegalStateException("This board is readonly");

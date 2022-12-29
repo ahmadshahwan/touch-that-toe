@@ -10,7 +10,7 @@ public class Board2D extends AbstractBoard<Coordinate2D> {
     private final Player[][] cells;
 
     public Board2D(int size) {
-        super(size);
+        super(size, 2);
         this.cells = new Player[size][size];
     }
 

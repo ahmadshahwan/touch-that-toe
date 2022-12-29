@@ -5,6 +5,8 @@ public abstract class AbstractBoard<T extends Coordinate> implements Board<T> {
     private final int size;
     private int placed = 0;
 
+    protected T[] winning;
+
     protected final int numberOfDimensions;
 
     private final int capacity;
@@ -36,6 +38,14 @@ public abstract class AbstractBoard<T extends Coordinate> implements Board<T> {
 
     protected abstract boolean checkWin(T position);
 
+    protected int diag(int x) {
+        return x;
+    }
+
+    protected int anti(int x) {
+        return this.getSize() - 1 - x;
+    }
+
     public final boolean isFull()  {
         return this.placed >= this.capacity;
     }
@@ -43,5 +53,10 @@ public abstract class AbstractBoard<T extends Coordinate> implements Board<T> {
     @Override
     public int dimensions() {
         return this.numberOfDimensions;
+    }
+
+    @Override
+    public T[] winningCombination() {
+        return this.winning;
     }
 }

@@ -1,7 +1,6 @@
 package com.acme.tictactoe.square;
 
 import com.acme.tictactoe.Engine;
-import com.acme.tictactoe.Player;
 import java.io.PrintStream;
 
 public class Engine2D extends Engine<Coordinate2D> {
@@ -23,9 +22,8 @@ public class Engine2D extends Engine<Coordinate2D> {
             out.print(" |");
             for (int j = 0; j < size; j++) {
                 Coordinate2D current = new Coordinate2D(i, j);
-                Player cell = board.at(current);
                 int label = i * size + j + 1;
-                this.print(out, current, cell, label);
+                this.print(out, current, label);
             }
             out.println("|");
         }

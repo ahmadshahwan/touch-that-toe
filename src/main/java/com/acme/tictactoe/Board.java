@@ -13,4 +13,6 @@ public interface Board<T extends Coordinate> {
     boolean isFull();
 
     int dimensions();
+
+    T[] winningCombination();
 }

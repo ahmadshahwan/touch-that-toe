@@ -1,7 +1,6 @@
 package com.acme.tictactoe.cube;
 
 import com.acme.tictactoe.Engine;
-import com.acme.tictactoe.Player;
 import java.io.PrintStream;
 
 public class Engine3D extends Engine<Coordinate3D> {
@@ -33,9 +32,8 @@ public class Engine3D extends Engine<Coordinate3D> {
                 out.print(" |");
                 for (int j = 0; j < size; j++) {
                     Coordinate3D current = this.coordinate(i, j, k);
-                    Player cell = this.board.at(current);
                     int label = i * size + j + 1;
-                    this.print(out, current, cell, label);
+                    this.print(out, current, label);
                 }
                 out.print("|");
                 out.print(" ".repeat(8));

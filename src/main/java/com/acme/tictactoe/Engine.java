@@ -1,6 +1,7 @@
 package com.acme.tictactoe;
 
 import java.io.PrintStream;
+import java.util.Arrays;
 
 public abstract class Engine<T extends Coordinate> {
 
@@ -46,11 +47,19 @@ public abstract class Engine<T extends Coordinate> {
         return this.board.getSize();
     }
 
-    protected void print(PrintStream out, Coordinate current, Player player, int label) {
+    private boolean isInWinningCombination(T current) {
+        return this.board.winningCombination() != null &&
+                Arrays.asList(this.board.winningCombination()).contains(current);
+    }
+
+    protected void print(PrintStream out, T current, int label) {
+        Player player = this.board.at(current);
         if (this.next !=null && this.next.equals(current)) {
             out.printf(">%s<", this.currentPlayer.toString().toLowerCase());
         } else if (player == null) {
             out.printf(" %d ", label);
+        } else if (isInWinningCombination(current)) {
+            out.printf("[%s]", player);
         } else {
             out.printf(" %s ", player);
         }

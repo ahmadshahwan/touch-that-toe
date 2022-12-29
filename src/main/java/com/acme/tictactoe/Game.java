@@ -122,8 +122,30 @@ public class Game {
         }
         int i = ij / this.board.getSize();
         int j = ij % this.board.getSize();
-        this.next = is3D() ? new Coordinate3D(i, j, k) : new Coordinate2D(i, j);
+        try {
+            this.updateNext(i, j, k);
+        } catch (CellNotEmptyException e) {
+            return false;
+        }
         return !confirmation;
+    }
+
+    private void updateNext(int i, int j, int k) {
+        if (this.board instanceof Board2D board2D) {
+            Coordinate2D coordinate = new Coordinate2D(i, j);
+            if (board2D.at(coordinate) != null) {
+                throw new CellNotEmptyException(coordinate);
+            }
+            this.next = coordinate;
+        } else if (this.board instanceof Board3D board3D) {
+            Coordinate3D coordinate = new Coordinate3D(i, j, k);
+            if (board3D.at(coordinate) != null) {
+                throw new CellNotEmptyException(coordinate);
+            }
+            this.next = coordinate;
+        } else {
+            throw new IllegalStateException("Board type cannot be determined");
+        }
     }
 
     public boolean readConfirmation() {
